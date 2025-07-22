@@ -48,11 +48,21 @@ export default function Header() {
     >
       <div className="flex justify-between items-center px-5 text-sm">
         <div className="flex gap-2">
-          <Link to="">로그인</Link>
-          <Link to="">회원가입</Link>
-          <Link to="">주문조회</Link>
-          <Link to="">장바구니</Link>
-          <Link to="">마이페이지</Link>
+          <Link className="hover:text-gray-600 transition" to="">
+            로그인
+          </Link>
+          <Link className="hover:text-gray-600 transition" to="/signup">
+            회원가입
+          </Link>
+          <Link className="hover:text-gray-600 transition" to="">
+            주문조회
+          </Link>
+          <Link className="hover:text-gray-600 transition" to="">
+            장바구니
+          </Link>
+          <Link className="hover:text-gray-600 transition" to="">
+            마이페이지
+          </Link>
         </div>
         <div className="flex gap-2 items-center">
           <HoverCard>
