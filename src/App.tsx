@@ -2,9 +2,8 @@ import Header from "./components/Header";
 
 export default function App() {
   return (
-    <div>
+    <div className="h-[300vh]">
       <Header />
-      <h1>Nice to meet you</h1>
     </div>
   );
 }
