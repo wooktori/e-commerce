@@ -3,6 +3,7 @@ import {
   Card,
   CardAction,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -19,19 +20,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "@/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 const formSchema = z
   .object({
-    email: z.email(),
+    email: z.email({ error: "이메일 형식이 맞지 않습니다." }),
     password: z
       .string()
       .min(8, { error: "비밀번호는 8자리 이상이어야 합니다." }),
-    checkPassword: z.string(),
-    phone: z.string(),
-    address: z.string(),
+    checkPassword: z.string().min(1, { error: "필수항목입니다." }),
+    phone: z.string().min(1, { error: "필수항목입니다." }),
+    address: z.string().min(1, { error: "필수항목입니다." }),
   })
   .refine((data) => data.password === data.checkPassword, {
     error: "비밀번호가 다릅니다.",
+    path: ["checkPassword"],
   });
 
 export default function Signup() {
@@ -45,11 +50,29 @@ export default function Signup() {
       address: "",
     },
   });
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const { email, password, address, phone } = data;
+    try {
+      const createdUser = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const id = createdUser.user.uid;
+
+      await setDoc(doc(db, "users", id), { address, phone });
+      console.log("성공", createdUser);
+    } catch (e) {
+      console.log("에러: ", e);
+    }
+  };
+
   return (
-    <>
-      <Card className="w-1/2">
+    <div className="flex items-center justify-center m-5">
+      <Card className="w-1/3 h-full">
         <CardHeader>
-          <CardTitle className="text-3xl">회원가입</CardTitle>
+          <CardTitle className="text-3xl mb-3">회원가입</CardTitle>
           <CardAction className="flex gap-4">
             <span className="text-gray-500">이미 회원이신가요?</span>
             <Link to="" className="hover:underline">
@@ -59,13 +82,15 @@ export default function Signup() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>이메일</FormLabel>
+                    <FormLabel>
+                      이메일<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="email" {...field} />
                     </FormControl>
@@ -78,7 +103,9 @@ export default function Signup() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>비밀번호</FormLabel>
+                    <FormLabel>
+                      비밀번호<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="password"
@@ -95,7 +122,9 @@ export default function Signup() {
                 name="checkPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>비밀번호 확인</FormLabel>
+                    <FormLabel>
+                      비밀번호 확인<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="check password"
@@ -112,7 +141,9 @@ export default function Signup() {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>전화번호</FormLabel>
+                    <FormLabel>
+                      전화번호<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="phone" {...field} />
                     </FormControl>
@@ -125,7 +156,9 @@ export default function Signup() {
                 name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>주소</FormLabel>
+                    <FormLabel>
+                      주소<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="address" {...field} />
                     </FormControl>
@@ -134,6 +167,7 @@ export default function Signup() {
                 )}
               />
 
+              <CardDescription>* 은 필수항목입니다.</CardDescription>
               <Button type="submit" className="hover:cursor-pointer">
                 회원가입
               </Button>
@@ -141,8 +175,9 @@ export default function Signup() {
           </Form>
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 }
 
-// 이메일, 비밀번호, 주소, 전화번호 => 유효성 검사, 이메일 중복 확인 기능
+//이메일 중복 확인 기능
+//회원가입 후 로그인 페이지로 이동.
