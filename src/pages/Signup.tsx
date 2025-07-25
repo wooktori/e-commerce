@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -23,6 +23,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { useState } from "react";
 
 const formSchema = z
   .object({
@@ -40,6 +42,8 @@ const formSchema = z
   });
 
 export default function Signup() {
+  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,6 +67,10 @@ export default function Signup() {
 
       await setDoc(doc(db, "users", id), { address, phone });
       console.log("성공", createdUser);
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (e) {
       console.log("에러: ", e);
     }
@@ -70,6 +78,13 @@ export default function Signup() {
 
   return (
     <div className="flex items-center justify-center m-5">
+      {success && (
+        <Alert className="fixed top-5 bg-gray-300 transition w-1/2 shadow">
+          <AlertTitle>
+            회원가입에 성공했습니다! 로그인 페이지로 이동합니다.
+          </AlertTitle>
+        </Alert>
+      )}
       <Card className="w-1/3 h-full">
         <CardHeader>
           <CardTitle className="text-3xl mb-3">회원가입</CardTitle>
