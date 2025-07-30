@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { CiSearch } from "react-icons/ci";
 import { BiShoppingBag } from "react-icons/bi";
+import { getAuth, signOut } from "firebase/auth";
 
 export default function Header() {
   const hot = [
@@ -21,6 +22,7 @@ export default function Header() {
   ];
   const [index, setIndex] = useState(0);
   const [isScrollDown, setIsScrollDown] = useState(false);
+  const auth = getAuth();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -48,12 +50,21 @@ export default function Header() {
     >
       <div className="flex justify-between items-center px-5 text-sm">
         <div className="flex gap-2">
-          <Link className="hover:text-gray-600 transition" to="/login">
-            로그인
-          </Link>
-          <Link className="hover:text-gray-600 transition" to="/signup">
-            회원가입
-          </Link>
+          {auth.currentUser ? (
+            <div onClick={() => signOut(auth)} className="hover:cursor-pointer">
+              로그아웃
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Link className="hover:text-gray-600 transition" to="/login">
+                로그인
+              </Link>
+              <Link className="hover:text-gray-600 transition" to="/signup">
+                회원가입
+              </Link>
+            </div>
+          )}
+
           <Link className="hover:text-gray-600 transition" to="">
             주문조회
           </Link>

@@ -16,20 +16,41 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import z from "zod";
 
 const formSchema = z.object({ email: z.email(), password: z.string() });
 
 export default function Login() {
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = () => {
-    console.log("hi");
+  useEffect(() => {
+    const auth = getAuth();
+    console.log(auth);
+  }, []);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const auth = getAuth();
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      values.email,
+      values.password
+    );
+    const user = userCredential.user;
+    if (!user) {
+      console.log("유저가 존재하지 않습니다.");
+    } else {
+      console.log("hi");
+    }
+    console.log(auth);
+    navigate("/");
   };
 
   return (
@@ -67,7 +88,11 @@ export default function Login() {
                   <FormItem>
                     <FormLabel>비밀번호</FormLabel>
                     <FormControl>
-                      <Input placeholder="password" {...field} />
+                      <Input
+                        placeholder="password"
+                        type="password"
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
