@@ -48,7 +48,7 @@ export default function Header() {
     >
       <div className="flex justify-between items-center px-5 text-sm">
         <div className="flex gap-2">
-          <Link className="hover:text-gray-600 transition" to="">
+          <Link className="hover:text-gray-600 transition" to="/login">
             로그인
           </Link>
           <Link className="hover:text-gray-600 transition" to="/signup">

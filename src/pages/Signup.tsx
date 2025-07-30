@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { Alert, AlertTitle } from "@/components/ui/alert";
@@ -68,6 +68,7 @@ export default function Signup() {
       await setDoc(doc(db, "users", id), { address, phone });
       console.log("성공", createdUser);
       setSuccess(true);
+      await signOut(auth);
       setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -90,7 +91,7 @@ export default function Signup() {
           <CardTitle className="text-3xl mb-3">회원가입</CardTitle>
           <CardAction className="flex gap-4">
             <span className="text-gray-500">이미 회원이신가요?</span>
-            <Link to="" className="hover:underline">
+            <Link to="/login" className="hover:underline">
               로그인
             </Link>
           </CardAction>
