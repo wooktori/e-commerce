@@ -68,10 +68,10 @@ export default function Header() {
           <Link className="hover:text-gray-600 transition" to="">
             주문조회
           </Link>
-          <Link className="hover:text-gray-600 transition" to="">
+          <Link className="hover:text-gray-600 transition" to="/cart">
             장바구니
           </Link>
-          <Link className="hover:text-gray-600 transition" to="">
+          <Link className="hover:text-gray-600 transition" to="/mypage">
             마이페이지
           </Link>
         </div>
